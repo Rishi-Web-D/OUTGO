@@ -1,10 +1,14 @@
+<!-- contact.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us</title>
-    <link rel="stylesheet" href="contact.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
     <div class="contact-container">
@@ -19,30 +23,37 @@
             <label for="message">Message</label>
             <textarea id="message" name="message" rows="4" required></textarea>
 
-            <button type="submit">Send Message</button>
+            <button type="submit" id="submitBtn">Send Message</button>
         </form>
+        <p id="statusMessage"></p>
     </div>
 
     <script>
-        document.getElementById('contactForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the default form submission
+        $(document).ready(function() {
+            $('#contactForm').submit(function(e) {
+                e.preventDefault();
 
-            // Fetch form data
-            let formData = new FormData(this);
+                var formData = {
+                    'name': $('#name').val(),
+                    'email': $('#email').val(),
+                    'message': $('#message').val()
+                };
 
-            // Send form data via AJAX
-            fetch('send_email.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert(data); // Show the response from send_email.php
-                this.reset(); // Reset the form
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('There was a problem sending your message. Please try again.');
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/sendEmail',
+                    data: formData,
+                    dataType: 'json',
+                    encode: true,
+                    success: function(response) {
+                        $('#statusMessage').text(response.message);
+                        $('#contactForm')[0].reset();
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        console.error('Error:', errorThrown);
+                        $('#statusMessage').text('There was a problem sending your message. Please try again.');
+                    }
+                });
             });
         });
     </script>
