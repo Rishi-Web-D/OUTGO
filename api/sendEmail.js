@@ -11,7 +11,7 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Please fill out all fields.' });
         }
 
-        // Configure nodemailer with your email service credentials
+        // Configure nodemailer with your email service credentialsJKASHK
         const transporter = nodemailer.createTransport({
             service: 'Gmail', // e.g., Gmail, Yahoo, etc.
             auth: {
